@@ -1,0 +1,49 @@
+{
+  "name": "@local/dsh-dynamic-model-identity",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Adapt the DSH harness identity to the currently selected model at every prompt assembly.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/scorpio0v0/dsh-dynamic-model-identity.git"
+  },
+  "homepage": "https://github.com/scorpio0v0/dsh-dynamic-model-identity#readme",
+  "bugs": "https://github.com/scorpio0v0/dsh-dynamic-model-identity/issues",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "docs",
+    "icon.svg",
+    "src",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=24.9.0"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": ">=4.1.0",
+    "@deepseek-ai/schemastery": ">=3.18.5"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-ui-plugin-manager"
+      ]
+    }
+  }
+}

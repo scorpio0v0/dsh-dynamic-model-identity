@@ -1,0 +1,13 @@
+# Created by cordis automatically for local resolution helpers
+.cordis/
+
+# Dependencies
+node_modules/
+
+# Logs and local artifacts
+*.log
+*.zip
+
+# Editor/OS noise
+.DS_Store
+Thumbs.db

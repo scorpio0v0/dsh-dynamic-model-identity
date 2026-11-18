@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "Dynamic model identity",
+    "description": "Adapts the harness identity in the system prompt to the currently selected model, so the prompt matches the model's official agent platform. Works for the main agent, subagents and workflow children without a DSH restart.",
+    "detail": "docs/DETAIL.md"
+  }
+}

@@ -1,0 +1,10 @@
+# Installs the Host plugin row and its Client settings page in one bundle.
+- insert:
+    - id: dynamic-model-identity
+      name: '@local/dsh-dynamic-model-identity'
+      config:
+        enabled: true
+        fallbackIdentity: 'You are an AI agent powered by DeepSeek Harness.'
+        identityTemplate: ''
+        userMappingsJson: ''
+        adaptRuntimeContexts: true

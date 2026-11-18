@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "动态模型身份适配",
+    "description": "根据当前选择的模型动态调整系统提示词中的 Harness Identity，使提示词与模型的官方 Agent 平台一致。对主 Agent、子 Agent 和 Workflow 子任务均生效，无需重启 DSH。",
+    "detail": "docs/DETAIL.md"
+  }
+}
