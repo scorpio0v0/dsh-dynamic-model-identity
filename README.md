@@ -1,5 +1,7 @@
 # dsh-dynamic-model-identity
 
+English | [简体中文](README.zh-CN.md)
+
 A DSH plugin that keeps the system prompt's harness identity consistent with the model actually serving each step.
 
 DSH ships the fixed opener `You are an AI agent powered by DeepSeek Harness.` at prompt order `-1000`. When a GLM model is selected, this plugin changes that opener to `You are an AI agent powered by Zcode.`; for GPT models to `You are an AI agent powered by OpenAI Codex.`, and so on. The decision is made locally on every prompt assembly from the live `context.modelSelection`.
@@ -113,7 +115,7 @@ node tests/prompt-adapter.test.js
 node tests/integration.test.js
 ```
 
-30/30 passing at delivery. See [research/test-report.md](research/test-report.md) for the full matrix and real before/after prompt.
+32/32 passing (integration tests need `DSH_CLI_DIR` pointed at a DSH checkout — `packages/core/system-prompt` recommended). See [research/test-report.md](research/test-report.md) for the full matrix and real before/after prompt.
 
 ## Rollback
 
