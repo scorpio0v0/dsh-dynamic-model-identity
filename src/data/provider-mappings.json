@@ -234,16 +234,16 @@
       "notes": "Fallback for first-party Moonshot routes."
     },
     {
-      "id": "tencent-hunyuan-workbuddy-neutral",
-      "harness": "DeepSeek Harness",
-      "identity": "You are an AI agent powered by DeepSeek Harness.",
-      "modelPatterns": ["hy4flash*", "*hy4flash*", "workbuddy/*", "hunyuan*", "*hunyuan*"],
+      "id": "workbuddy-model-any-provider",
+      "harness": "WorkBuddy",
+      "identity": "You are an AI agent powered by WorkBuddy.",
+      "modelPatterns": ["workbuddy/*", "hy4flash*", "*hy4flash*", "hunyuan*", "*hunyuan*"],
       "providerPatterns": [],
       "match": "model",
       "enabled": true,
-      "priority": 40,
+      "priority": 96,
       "source": "",
-      "notes": "Locally observed magpie/workbuddy/hy4flash-free default. No official Hunyuan/WorkBuddy agent harness was confirmed, so the neutral default identity is emitted. Same-vendor model rules (GLM/DeepSeek/Kimi at >= 80) still win for their prefixed ids."
+      "notes": "Every workbuddy/-prefixed route brands as WorkBuddy regardless of the underlying vendor model (deepseek, glm, kimi, hy4flash...). Priority 96 outranks the vendor model rules (94/90/80); the tie with zcode-model-any-provider (96) is broken by pattern specificity (workbuddy/* is more literal than *glm*). Bare Hunyuan ids (hy4flash-free, hunyuan-*) are covered too."
     },
     {
       "id": "openrouter-provider-override",

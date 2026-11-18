@@ -42,10 +42,9 @@ window.__ModuleLoader__.load({
       explain1: 'Patterns apply to the model ID and the provider ID, case-insensitive. `*` matches any sequence (including /); a pattern without `*` is an exact full-string match. "glm-*" hits glm-4.6 but not chatgpt-5.',
       explain2: 'The winner is the highest-scoring rule: priority first (higher wins), then match mode (model-and-provider > model > provider), then pattern specificity (more literal characters), then rule id.',
       explain3: 'Built-in rules occupy priority 10-100. User rules should use 200+ to override; a user rule with the same id replaces the built-in one, and enabled:false disables that id.',
-      explain4: 'No rule matched, or a neutral rule hit → the factory opener is kept. Some model families have no confirmed official agent platform; their rules deliberately keep the neutral opener instead of inventing one.',
+      explain4: 'No rule matched → the factory opener is kept (neutral fallback).',
       builtins: 'Built-in rules (enabled, click to expand)',
       templatesNote: '12 more template rules ship disabled by default (OpenRouter, SiliconFlow, Ollama, vLLM, LM Studio, magpie...). Enable one by adding a user rule with the same id and enabled:true.',
-      neutralNote: 'This model family has no confirmed official agent platform, so the rule deliberately keeps the neutral opener. Want a custom identity? Add a user rule with priority >= 200 (see below).',
       fallbackNote: 'No rule matched, so the factory opener is kept. Add a user rule below to map this model.',
     }
     const zh = {
@@ -77,10 +76,9 @@ window.__ModuleLoader__.load({
       explain1: 'pattern 作用于「模型 ID」与「Provider ID」两列，不区分大小写。`*` 匹配任意字符序列（含 /）；不含 `*` 的 pattern 为全串精确匹配。例如 "glm-*" 命中 glm-4.6，但不会命中 chatgpt-5。',
       explain2: '命中规则取「得分最高」者：先比 priority（数字大者优先），再比匹配模式（model-and-provider > model > provider），再比 pattern 具体度（字面字符多者优先），最后比 id 字典序。',
       explain3: '内置规则占用 priority 10–100；用户规则请用 200 以上才能压过内置。相同 id 直接覆盖内置规则；enabled:false 表示按 id 禁用。',
-      explain4: '没有任何规则命中、或命中"中性规则"时 → 保留出厂开场白。部分模型家族没有已确认的官方 Agent 平台，其内置规则刻意保留中性开场白，而不是编造一个不存在的身份。',
+      explain4: '没有任何规则命中时 → 保留出厂开场白（中性回退）。',
       builtins: '内置规则（已启用，点击展开）',
       templatesNote: '另有 12 条默认关闭的模板规则（OpenRouter、SiliconFlow、Together、Fireworks、Ollama、vLLM、LM Studio、magpie 等——它们是路由器/宿主，不是模型官方平台）。想启用某条：在用户规则里写相同 id 并 enabled:true。',
-      neutralNote: '该模型家族（Hunyuan / WorkBuddy）没有已确认的官方 Agent 平台，规则按设计保留中性开场白，而不是写一个不存在的 "powered by WorkBuddy"。想改成自定义身份：在下方添加一条 priority ≥ 200 的用户规则。',
       fallbackNote: '没有规则命中，保留出厂开场白。可在下方用户规则里为该模型添加映射。',
     }
 
@@ -106,7 +104,7 @@ window.__ModuleLoader__.load({
       { id: 'google-provider-only', harness: 'Google Gemini CLI', identity: 'You are an AI agent powered by Google Gemini CLI.', m: [], p: ['google', 'google-generative-ai', 'gemini'], mch: 'provider', pri: 58 },
       { id: 'qwen-provider-only', harness: 'Qwen Code', identity: 'You are an AI agent powered by Qwen Code.', m: [], p: ['qwen', 'dashscope', 'alibaba', 'aliyun'], mch: 'provider', pri: 55 },
       { id: 'moonshot-provider-only', harness: 'Kimi Code', identity: 'You are an AI agent powered by Kimi Code.', m: [], p: ['moonshot', 'moonshot-ai', 'kimi'], mch: 'provider', pri: 54 },
-      { id: 'tencent-hunyuan-workbuddy-neutral', harness: 'DeepSeek Harness', identity: 'You are an AI agent powered by DeepSeek Harness.', m: ['hy4flash*', '*hy4flash*', 'workbuddy/*', 'hunyuan*', '*hunyuan*'], p: [], mch: 'model', pri: 40, neutral: true },
+      { id: 'workbuddy-model-any-provider', harness: 'WorkBuddy', identity: 'You are an AI agent powered by WorkBuddy.', m: ['workbuddy/*', 'hy4flash*', '*hy4flash*', 'hunyuan*', '*hunyuan*'], p: [], mch: 'model', pri: 96 },
     ]
 
     function matches(pattern, value) {
@@ -227,7 +225,6 @@ window.__ModuleLoader__.load({
           h('div', { style: row }, h('span', null, t('identity')), h('span', { style: value }, result.identity)),
           h('div', { style: row }, h('span', null, t('matchedRule')), h('span', { style: value }, result.ruleId + (result.priority !== undefined ? ' · P' + result.priority : ''))),
           result.ruleId === 'fallback' ? h('div', { style: hint }, t('fallbackNote')) : null,
-          (RULES.find(rule => rule.id === result.ruleId) || {}).neutral ? h('div', { style: hint }, t('neutralNote')) : null,
           h('div', { style: hint }, t('previewNote')),
         ),
 

@@ -65,12 +65,12 @@ test('real assembly: switching models changes identity without re-registration',
   const { ctx, scope, scopeKey, renderPrompt } = await mount()
   installSection(scope, ctx, {})
   const cases = [
-    [{ provider: 'magpie', model: 'workbuddy/deepseek-v4.1-flash' }, 'You are an AI agent powered by DeepSeek Harness.'],
+    [{ provider: 'magpie', model: 'workbuddy/deepseek-v4.1-flash' }, 'You are an AI agent powered by WorkBuddy.'],
     [{ provider: 'magpie-anthropic', model: 'zcode/GLM-5.3-Flash' }, 'You are an AI agent powered by Zcode.'],
     [{ provider: 'openai', model: 'gpt-5' }, 'You are an AI agent powered by OpenAI Codex.'],
     [{ provider: 'anthropic', model: 'claude-sonnet-4-5' }, 'You are an AI agent powered by Claude Code.'],
     [{ provider: 'google', model: 'gemini-2.5-pro' }, 'You are an AI agent powered by Google Gemini CLI.'],
-    [{ provider: 'magpie', model: 'workbuddy/hy4flash-free' }, DEFAULT_IDENTITY],
+    [{ provider: 'magpie', model: 'workbuddy/hy4flash-free' }, 'You are an AI agent powered by WorkBuddy.'],
   ]
   for (const [selection, expected] of cases) {
     const prompt = renderPrompt(await ctx.systemPrompt.assemble({ scope: scopeKey, modelSelection: selection }))
@@ -158,7 +158,7 @@ test('runtime-context paragraphs are branded per step via the assemble waterfall
     assert.match(glmWeb.text, /Only dsh web injects window\.__DSH_BOOT__/)
 
     // DeepSeek step: brand is already neutral — text stays byte-identical.
-    const deepseek = await ctx.systemPrompt.assemble({ scope: scopeKey, modelSelection: { provider: 'magpie', model: 'workbuddy/deepseek-v4.1-flash' } })
+    const deepseek = await ctx.systemPrompt.assemble({ scope: scopeKey, modelSelection: { provider: 'magpie', model: 'deepseek-chat' } })
     const deepseekPrompt = renderPrompt(deepseek)
     assert.match(deepseekPrompt, /the DeepSeek Harness implementation checkout/)
     assert.match(deepseekPrompt, /inspect or extend DSH itself/)

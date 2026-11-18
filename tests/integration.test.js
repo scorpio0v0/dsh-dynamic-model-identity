@@ -43,15 +43,15 @@ async function boot(config = {}, personaPrefix = 'You are a coding agent powered
 
 const identityOf = prompt => prompt.split('\n\n')[0]
 
-test('model switch matrix: DeepSeek → GLM → GPT → Claude → Gemini → DeepSeek', async () => {
+test('model switch matrix: WorkBuddy → GLM → GPT → Claude → Gemini → WorkBuddy', async () => {
   const app = await boot()
   const sequence = [
-    [{ provider: 'magpie', model: 'workbuddy/deepseek-v4.1-flash' }, DEFAULT_IDENTITY],
+    [{ provider: 'magpie', model: 'workbuddy/deepseek-v4.1-flash' }, 'You are an AI agent powered by WorkBuddy.'],
     [{ provider: 'magpie-anthropic', model: 'zcode/GLM-5.3-Flash' }, 'You are an AI agent powered by Zcode.'],
     [{ provider: 'openai', model: 'gpt-5' }, 'You are an AI agent powered by OpenAI Codex.'],
     [{ provider: 'anthropic', model: 'claude-sonnet-4-5' }, 'You are an AI agent powered by Claude Code.'],
     [{ provider: 'google', model: 'gemini-2.5-pro' }, 'You are an AI agent powered by Google Gemini CLI.'],
-    [{ provider: 'magpie', model: 'workbuddy/deepseek-v4.1-flash' }, DEFAULT_IDENTITY],
+    [{ provider: 'magpie', model: 'workbuddy/deepseek-v4.1-flash' }, 'You are an AI agent powered by WorkBuddy.'],
   ]
   for (const [selection, expected] of sequence) {
     const prompt = await app.render(selection)

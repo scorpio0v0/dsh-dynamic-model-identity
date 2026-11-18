@@ -19,7 +19,7 @@ From the DSH GUI: **Plugins → Add plugin**, paste the repository spec, then en
 dsh plugin --profile web add "github:scorpio0v0/dsh-dynamic-model-identity"
 ```
 
-Pin a tag or commit by appending `#v1.1.0`. An agent with the `plugin_manager` tool can install the same bundle with:
+Pin a tag or commit by appending `#v1.2.0`. An agent with the `plugin_manager` tool can install the same bundle with:
 
 ```
 plugin_manager(action="install_bundle", target="github:scorpio0v0/dsh-dynamic-model-identity")
@@ -81,6 +81,13 @@ Example user rule:
 
 Rules are merged by `id`. A user rule with an existing id replaces the built-in; `enabled: false` disables it. Built-ins occupy priorities 10–100; use 200+ for user overrides. Matching is case-insensitive, `*` matches any sequence (including `/`), and a pattern without `*` is an exact full-string match. Conflict order: priority, match mode (`model-and-provider` > `model` > `provider`), pattern specificity, id.
 
+### Changing the built-in rules
+
+Two layers, choose by intent:
+
+- **Recommended — user overrides** (`userMappingsJson` above, or the same field in `cordis.patch.yml`): same-id replace, survives plugin updates, takes effect on the next prompt assembly without a restart. This is where personal mappings belong.
+- **The shipped database** — [src/data/provider-mappings.json](src/data/provider-mappings.json): the built-in defaults themselves (one JSON object per rule: `id`, `harness`, `identity`, `modelPatterns`, `providerPatterns`, `match`, `enabled`, `priority`). Edit it when you want to fork the plugin's defaults; for a `link:` install a Host restart loads the new table, for a git install re-run the add command (or use the Plugins update flow).
+
 ## How it works
 
 - Registers a section named `harness:identity` on each Agent's scoped context, with order `-1000` and `interpolate: false`. A scoped section shadows the global default, so there is exactly one identity section.
@@ -101,7 +108,7 @@ See [research/default-system-prompt.md](research/default-system-prompt.md), [res
 | Gemini | `gemini-2.5-pro` | Google Gemini CLI |
 | Qwen | `qwen3-coder`, `Qwen/Qwen3-Coder` | Qwen Code |
 | Kimi | `kimi-k3.1-pro`, `workbuddy/kimi-*` | Kimi Code |
-| Hunyuan / WorkBuddy | `workbuddy/hy4flash-free` | neutral fallback (no official harness confirmed) |
+| WorkBuddy routes | `workbuddy/*` — `workbuddy/hy4flash-free`, `workbuddy/deepseek-*`, `workbuddy/glm-*`, `workbuddy/kimi-*`, bare `hy4flash*`/`hunyuan*` | WorkBuddy |
 | Unknown / local | anything else | neutral fallback |
 
 Provider-only templates for OpenRouter, SiliconFlow, Together AI, Fireworks AI, Ollama, vLLM, LM Studio and `magpie` are shipped **disabled**: these are routers or hosts, not the model's official agent platform.

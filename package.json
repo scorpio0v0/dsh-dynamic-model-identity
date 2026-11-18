@@ -1,6 +1,6 @@
 {
   "name": "@local/dsh-dynamic-model-identity",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
   "description": "Adapt the DSH harness identity to the currently selected model at every prompt assembly.",

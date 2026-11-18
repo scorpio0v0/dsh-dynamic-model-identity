@@ -98,22 +98,26 @@ dsh plugin --profile web add "file:/path/to/dsh-dynamic-model-identity"
 
 非法 JSON 会被忽略（只用内置规则），不会阻断提示词装配。
 
-### 5.1 为什么 `workbuddy/hy4flash-free` 命中的规则仍写 "powered by DeepSeek Harness"？
+### 5.1 WorkBuddy 路由的默认身份（v1.2.0 起）
 
-这是**刻意设计**，不是 bug。插件的语义是：identity = 该模型**官方 Agent 平台**的名字（GPT → OpenAI Codex，Claude → Claude Code，GLM → Zcode）。改写开场白的前提是"这个身份真实存在"。
+自 v1.2.0 起，内置规则 `workbuddy-model-any-provider`（priority 96）把**所有 `workbuddy/` 前缀的路由**——`workbuddy/hy4flash-free`、`workbuddy/deepseek-*`、`workbuddy/glm-*`、`workbuddy/kimi-*`——以及裸 `hy4flash*`/`hunyuan*` 模型，统一判定为：
 
-`workbuddy/hy4flash-free` 属于腾讯 Hunyuan/WorkBuddy 家族，而腾讯**没有已确认的官方 coding agent 平台**（没有类似 Codex / Claude Code 的第一方 CLI）。如果规则写 `You are an AI agent powered by WorkBuddy.`，等于让模型自报一个不存在的平台。所以内置规则 `tencent-hunyuan-workbuddy-neutral`（priority 40）的设计是：**命中但保留中性开场白**——与未命中任何规则时的回退一致。DeepSeek 家族同理：DSH 开场白本身就是它们的"官方"身份，无需改写。
+```
+You are an AI agent powered by WorkBuddy.
+```
 
-**想让它写 "powered by WorkBuddy"**（或任何自定义身份）：加一条 priority ≥ 200 的用户规则覆盖内置的 40：
+该规则优先级高于厂商模型规则（DeepSeek 94 / Zcode 96 平手靠 pattern 具体度 / Kimi 80），所以 `workbuddy/deepseek-*` 不再落到 DeepSeek Harness。未带 `workbuddy/` 前缀的厂商模型不受影响（`deepseek-chat` → DeepSeek Harness、`zcode/GLM-*` → Zcode）。
+
+想让某条 workbuddy 路由恢复厂商身份：加一条 priority ≥ 300 的用户规则，例如把 `workbuddy/deepseek-*` 判回 DeepSeek Harness：
 
 ```json
 {
   "rules": [
     {
-      "id": "my-workbuddy",
-      "harness": "WorkBuddy",
-      "identity": "You are an AI agent powered by WorkBuddy.",
-      "modelPatterns": ["workbuddy/*", "*hy4flash*"],
+      "id": "workbuddy-deepseek-vendor",
+      "harness": "DeepSeek Harness",
+      "identity": "You are an AI agent powered by DeepSeek Harness.",
+      "modelPatterns": ["workbuddy/deepseek-*"],
       "providerPatterns": [],
       "match": "model",
       "enabled": true,
@@ -123,7 +127,16 @@ dsh plugin --profile web add "file:/path/to/dsh-dynamic-model-identity"
 }
 ```
 
-保存后下一步装配即生效（字段是 volatile 的），无需重启。
+### 5.1.1 想改默认规则，改哪个文件？
+
+两层，按意图选：
+
+| 层 | 位置 | 生效方式 | 适用场景 |
+|---|---|---|---|
+| **用户规则（推荐）** | 设置页"用户映射规则"文本框，或 `cordis.patch.yml` 里插件行的 `userMappingsJson` 字段 | 下一次装配即生效，无需重启；插件升级不受影响 | 个人映射、覆盖某条内置规则 |
+| **内置规则库** | 插件目录下的 [src/data/provider-mappings.json](src/data/provider-mappings.json)（每条规则一个 JSON 对象） | `link:` 安装：重启 DSH；git 安装：重跑安装命令或走 Plugins 更新流程 | 想直接改插件出厂默认值（相当于 fork） |
+
+内置规则库共 33 条：21 条启用（v1.2.0 把原中性规则升级为 WorkBuddy 正向规则）+ 12 条默认关闭的模板。
 
 ### 5.2 匹配机制速查
 

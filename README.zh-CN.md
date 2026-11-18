@@ -19,7 +19,7 @@ DSH GUI：**Plugins → Add plugin**，粘贴仓库规格，然后启用 **Dynam
 dsh plugin --profile web add "github:scorpio0v0/dsh-dynamic-model-identity"
 ```
 
-在末尾追加 `#v1.1.0` 可固定到某个标签或提交。拥有 `plugin_manager` 工具的 Agent 也可以用同样的规格安装：
+在末尾追加 `#v1.2.0` 可固定到某个标签或提交。拥有 `plugin_manager` 工具的 Agent 也可以用同样的规格安装：
 
 ```
 plugin_manager(action="install_bundle", target="github:scorpio0v0/dsh-dynamic-model-identity")
@@ -81,6 +81,13 @@ dsh plugin --profile web remove @local/dsh-dynamic-model-identity
 
 规则按 `id` 合并：用户规则与内置规则同 `id` 即覆盖；`enabled: false` 表示按 id 禁用。内置规则占用 priority 10–100，用户覆盖请用 200 以上。匹配不区分大小写，`*` 匹配任意字符序列（含 `/`），不含 `*` 的 pattern 为全串精确匹配。冲突消解顺序：priority、匹配模式（`model-and-provider` > `model` > `provider`）、pattern 具体度、id。
 
+### 修改内置规则
+
+两层，按意图选择：
+
+- **推荐——用户规则覆盖**（上面的 `userMappingsJson`，或 `cordis.patch.yml` 里的同名字段）：同 id 即替换，插件更新不受影响，下一次装配即生效、无需重启。个人映射规则放这里。
+- **内置规则库本身**——[src/data/provider-mappings.json](src/data/provider-mappings.json)：出厂默认规则（每条一个 JSON 对象：`id`、`harness`、`identity`、`modelPatterns`、`providerPatterns`、`match`、`enabled`、`priority`）。想给插件本身换默认值时改它；`link:` 安装改完重启 Host 即生效，git 安装则重跑安装命令（或走 Plugins 页的更新流程）。
+
 ## 工作原理
 
 - 在每个 Agent 的作用域上下文注册名为 `harness:identity` 的 section，顺序 `-1000`、`interpolate: false`。作用域 section 遮蔽全局默认，因此始终只有一个身份段。
@@ -101,7 +108,7 @@ dsh plugin --profile web remove @local/dsh-dynamic-model-identity
 | Gemini | `gemini-2.5-pro` | Google Gemini CLI |
 | Qwen | `qwen3-coder`、`Qwen/Qwen3-Coder` | Qwen Code |
 | Kimi | `kimi-k3.1-pro`、`workbuddy/kimi-*` | Kimi Code |
-| Hunyuan / WorkBuddy | `workbuddy/hy4flash-free` | 中性回退（无已确认的官方 Harness） |
+| WorkBuddy 路由 | `workbuddy/*`——`workbuddy/hy4flash-free`、`workbuddy/deepseek-*`、`workbuddy/glm-*`、`workbuddy/kimi-*`，及裸 `hy4flash*`/`hunyuan*` | WorkBuddy |
 | 未知 / 本地 | 其他任意模型 | 中性回退 |
 
 OpenRouter、SiliconFlow、Together AI、Fireworks AI、Ollama、vLLM、LM Studio 与 `magpie` 的 provider 级模板默认**关闭**：它们是路由器或宿主，不是模型的官方 Agent 平台。
